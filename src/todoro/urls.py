@@ -16,7 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from tasks.views import tasks_list
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls)
+    url(r'^admin/', admin.site.urls),
+    url(r'^$', tasks_list)  # si la URL es /, ejecutar función tasks_list
 ]
