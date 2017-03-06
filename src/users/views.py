@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth import authenticate, login as django_login
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.shortcuts import render, redirect
 
 
@@ -25,3 +25,13 @@ def login(request):
             context["error"] = "Wrong username or password"
 
     return render(request, 'login.html', context)
+
+
+def logout(request):
+    """
+    Hace logout de un usuario
+    :param request: HttpRequest
+    :return: HttpResponse
+    """
+    django_logout(request)
+    return redirect('login')
