@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.shortcuts import render, redirect
+from django.views import View
 
 
-def login(request):
-    """
-    Hace login de un usuario
-    :param request: HttpRequest
-    :return: HttpResponse
-    """
-    context = dict()
-    if request.method == "POST":
+class LoginView(View):
+
+    def get(self, request):
+        """
+        Presenta el formulario de login a un usuario
+        :param request: HttpRequest
+        :return: HttpResponse
+        """
+        return render(request, 'login.html')
+
+    def post(self, request):
+        """
+        Hace login de un usuario
+        :param request: HttpRequest
+        :return: HttpResponse
+        """
+        context = dict()
         username = request.POST.get("usr")
         password = request.POST.get("pwd")
         user = authenticate(username=username, password=password)
@@ -23,8 +33,7 @@ def login(request):
         else:
             # usuario no autenticado
             context["error"] = "Wrong username or password"
-
-    return render(request, 'login.html', context)
+        return render(request, 'login.html', context)
 
 
 def logout(request):
