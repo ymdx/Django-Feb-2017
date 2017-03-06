@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from django.shortcuts import render, redirect
 from django.views import View
 
+from users.forms import LoginForm
+
 
 class LoginView(View):
 
@@ -12,7 +14,10 @@ class LoginView(View):
         :param request: HttpRequest
         :return: HttpResponse
         """
-        return render(request, 'login.html')
+        context = {
+            'form': LoginForm()
+        }
+        return render(request, 'login.html', context)
 
     def post(self, request):
         """
@@ -20,19 +25,22 @@ class LoginView(View):
         :param request: HttpRequest
         :return: HttpResponse
         """
+        form = LoginForm(request.POST)
         context = dict()
-        username = request.POST.get("usr")
-        password = request.POST.get("pwd")
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            # usuario autenticado
-            request.session["default-language"] = "es"
-            django_login(request, user)
-            url = request.GET.get('next', 'tasks_list')
-            return redirect(url)
-        else:
-            # usuario no autenticado
-            context["error"] = "Wrong username or password"
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                # usuario autenticado
+                request.session["default-language"] = "es"
+                django_login(request, user)
+                url = request.GET.get('next', 'tasks_list')
+                return redirect(url)
+            else:
+                # usuario no autenticado
+                context["error"] = "Wrong username or password"
+        context["form"] = form
         return render(request, 'login.html', context)
 
 
