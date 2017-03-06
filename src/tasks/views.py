@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
 
 from tasks.forms import TaskForm
@@ -60,6 +61,7 @@ def tasks_detail(request, task_pk):
 
 class NewTaskView(View):
 
+    @method_decorator(login_required)
     def get(self, request):
         # crear el formulario
         form = TaskForm()
@@ -70,6 +72,7 @@ class NewTaskView(View):
         }
         return render(request, 'tasks/new.html', context)
 
+    @method_decorator(login_required)
     def post(self, request):
         # crear el formulario con los datos del POST
         task_with_user = Task(owner=request.user)
