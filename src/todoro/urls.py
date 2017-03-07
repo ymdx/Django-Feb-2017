@@ -30,5 +30,5 @@ urlpatterns = [
 
     # API
     url(r'^api/1.0/users/$', UsersAPI.as_view(), name="users_api"),
-    url(r'^api/1.0/users/(?P<pk>[0-9]+)$', UserDetailAPI.as_view(), name="user_detail_api")
+    url(r'^api/1.0/users/(?P<pk>[0-9]+)/?$', UserDetailAPI.as_view(), name="user_detail_api")
 ]
