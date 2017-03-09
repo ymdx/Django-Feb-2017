@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
-from rest_framework.generics import get_object_or_404, GenericAPIView
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.viewsets import GenericViewSet
 
 from users.permissions import UserPermission
 from users.serializers import UserSerializer, UsersListSerializer
 
 
-class UsersAPI(GenericAPIView):
-    """
-    Lists (GET) and creates (POST) users
-    """
+class UserViewSet(GenericViewSet):
+
     permission_classes = (UserPermission,)
 
-    def get(self, request):
+    def list(self, request):
         """
         Returns a list of the system users
         :param request: HttpRequest
@@ -26,7 +24,7 @@ class UsersAPI(GenericAPIView):
         serializer = UsersListSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
 
-    def post(self, request):
+    def create(self, request):
         """
         Creates a user
         :param request: HttpRequest
@@ -39,14 +37,7 @@ class UsersAPI(GenericAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class UserDetailAPI(APIView):
-    """
-    User detail (GET), update user (PUT), delete user (DELETE)
-    """
-    permission_classes = (UserPermission,)
-
-    def get(self, request, pk):
+    def retrieve(self, request, pk):
         """
         Returns a requested user
         :param request: HttpRequest
@@ -58,7 +49,7 @@ class UserDetailAPI(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    def put(self, request, pk):
+    def update(self, request, pk):
         """
         Updates a User with the given data
         :param request: HttpRequest
@@ -74,7 +65,7 @@ class UserDetailAPI(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
+    def destroy(self, request, pk):
         """
         Deletes a user
         :param request: HttpRequest

@@ -11,14 +11,16 @@ class UserPermission(BasePermission):
         :param view: UsersAPI/UserDetailAPI
         :return: True si puede, False si no puede
         """
-        from users.api import UserDetailAPI
-
-        # cualquiera puede crear un usuario (POST)
-        if request.method == "POST":
+        # cualquiera autenticado puede acceder al detalle para ver, actualizar o borrar
+        if request.user.is_authenticated() and view.action in ("retrieve", "update", "destroy"):
             return True
 
-        # si esta autenticado y quiere hacer algo sobre el detalle o es superusuario y quiere hacer algo sobre el listado
-        if request.user.is_authenticated() and (request.user.is_superuser or isinstance(view, UserDetailAPI)):
+        # si es superusuario y quiere acceder al listado
+        if request.user.is_superuser and view.action == "list":
+            return True
+
+        # cualquiera puede crear un usuario (POST)
+        if view.action == "create":
             return True
 
         return False
