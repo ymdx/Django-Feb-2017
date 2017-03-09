@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
+from users.permissions import UserPermission
 from users.serializers import UserSerializer, UsersListSerializer
 
 
@@ -12,6 +13,7 @@ class UsersAPI(GenericAPIView):
     """
     Lists (GET) and creates (POST) users
     """
+    permission_classes = (UserPermission,)
 
     def get(self, request):
         """
@@ -42,6 +44,7 @@ class UserDetailAPI(APIView):
     """
     User detail (GET), update user (PUT), delete user (DELETE)
     """
+    permission_classes = (UserPermission,)
 
     def get(self, request, pk):
         """
@@ -51,6 +54,7 @@ class UserDetailAPI(APIView):
         :return: Response
         """
         user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -62,6 +66,7 @@ class UserDetailAPI(APIView):
         :return: Response
         """
         user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -77,5 +82,6 @@ class UserDetailAPI(APIView):
         :return: Response
         """
         user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
